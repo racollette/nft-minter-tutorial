@@ -13,12 +13,13 @@ const Minter = (props) => {
   const [description, setDescription] = useState("");
   const [url, setURL] = useState("");
 
-  useEffect(async () => {
-    const { address, status } = await getCurrentWalletConnected();
-
-    setWallet(address);
-    setStatus(status);
-
+  useEffect(() => {
+    async function fetchWallet() {
+      const { address, status } = await getCurrentWalletConnected();
+      setWallet(address);
+      setStatus(status);
+    }
+    fetchWallet();
     addWalletListener();
   }, []);
 

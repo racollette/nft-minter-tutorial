@@ -1,9 +1,9 @@
 import { pinJSONToIPFS } from "./pinata.js";
 import { ethers } from "ethers";
 require('dotenv').config();
+const provider = new ethers.providers.Web3Provider(window.ethereum)
 const contractABI = require("../contract-abi.json");
-const contractAddress = "0x4C4a07F737Bf57F6632B6CAB089B78f62385aCaE";
-const provider = new ethers.providers.JsonRpcProvider(process.env.REACT_APP_RPC_URL); // ESC testnet RPC URL
+const contractAddress = "0x93E5Dcad2238273B3A258A358834F210FE5f0Fef";
 
 export const connectWallet = async () => {
   if (window.ethereum) {
@@ -106,26 +106,18 @@ export const mintNFT = async (url, name, description) => {
   }
   const tokenURI = pinataResponse.pinataUrl;
 
-  window.contract = await new ethers.Contract(contractAddress, contractABI, provider);
-
-  const transactionParameters = {
-    to: contractAddress, // Required except during contract publications.
-    from: window.ethereum.selectedAddress, // must match user's active address.
-    data: window.contract.methods
-      .mintNFT(window.ethereum.selectedAddress, tokenURI)
-      .encodeABI(),
-  };
+  window.ethereum.enable()
+  const signer = await provider.getSigner()
+  const contract = (await new ethers.Contract(contractAddress, contractABI, provider))
+  const contractWithSigner = contract.connect(signer)
 
   try {
-    const txHash = await window.ethereum.request({
-      method: "eth_sendTransaction",
-      params: [transactionParameters],
-    });
+    const { hash } = await contractWithSigner.mintNFT(window.ethereum.selectedAddress, tokenURI)
     return {
       success: true,
       status:
-        "✅ Check out your transaction on Etherscan: https://esc-testnet.elastos.io/tx/" +
-        txHash,
+        "✅ Check out your transaction on the explorer: https://esc-testnet.elastos.io/tx/" +
+        hash,
     };
   } catch (error) {
     return {
