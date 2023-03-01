@@ -1,9 +1,9 @@
 import { pinJSONToIPFS } from "./pinata.js";
 import { ethers } from "ethers";
-
+require('dotenv').config();
 const contractABI = require("../contract-abi.json");
 const contractAddress = "0x4C4a07F737Bf57F6632B6CAB089B78f62385aCaE";
-const provider = new ethers.providers.JsonRpcProvider("https://api-testnet.elastos.io/esc"); // ESC testnet RPC URL
+const provider = new ethers.providers.JsonRpcProvider(process.env.REACT_APP_RPC_URL); // ESC testnet RPC URL
 
 export const connectWallet = async () => {
   if (window.ethereum) {
@@ -82,10 +82,6 @@ export const getCurrentWalletConnected = async () => {
     };
   }
 };
-
-async function loadContract() {
-  return new ethers.Contract(contractAddress, contractABI, provider);
-}
 
 export const mintNFT = async (url, name, description) => {
   if (url.trim() == "" || name.trim() == "" || description.trim() == "") {
