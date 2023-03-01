@@ -1,6 +1,5 @@
 import { pinJSONToIPFS } from "./pinata.js";
 import { ethers } from "ethers";
-require('dotenv').config();
 const provider = new ethers.providers.Web3Provider(window.ethereum)
 const contractABI = require("../contract-abi.json");
 const contractAddress = "0x93E5Dcad2238273B3A258A358834F210FE5f0Fef";
