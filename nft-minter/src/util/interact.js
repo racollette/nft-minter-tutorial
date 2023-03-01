@@ -1,10 +1,9 @@
 import { pinJSONToIPFS } from "./pinata.js";
-require("dotenv").config();
-const alchemyKey = process.env.REACT_APP_ALCHEMY_KEY;
+import { ethers } from "ethers";
+
 const contractABI = require("../contract-abi.json");
 const contractAddress = "0x4C4a07F737Bf57F6632B6CAB089B78f62385aCaE";
-const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
-const web3 = createAlchemyWeb3(alchemyKey);
+const provider = new ethers.providers.JsonRpcProvider("https://api-testnet.elastos.io/esc"); // ESC testnet RPC URL
 
 export const connectWallet = async () => {
   if (window.ethereum) {
@@ -85,7 +84,7 @@ export const getCurrentWalletConnected = async () => {
 };
 
 async function loadContract() {
-  return new web3.eth.Contract(contractABI, contractAddress);
+  return new ethers.Contract(contractAddress, contractABI, provider);
 }
 
 export const mintNFT = async (url, name, description) => {
@@ -111,7 +110,7 @@ export const mintNFT = async (url, name, description) => {
   }
   const tokenURI = pinataResponse.pinataUrl;
 
-  window.contract = await new web3.eth.Contract(contractABI, contractAddress);
+  window.contract = await new ethers.Contract(contractAddress, contractABI, provider);
 
   const transactionParameters = {
     to: contractAddress, // Required except during contract publications.
@@ -129,7 +128,7 @@ export const mintNFT = async (url, name, description) => {
     return {
       success: true,
       status:
-        "✅ Check out your transaction on Etherscan: https://ropsten.etherscan.io/tx/" +
+        "✅ Check out your transaction on Etherscan: https://esc-testnet.elastos.io/tx/" +
         txHash,
     };
   } catch (error) {
